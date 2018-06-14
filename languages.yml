@@ -1,0 +1,17 @@
+# language definitions for this repository
+
+---
+Markdown:
+  type: prose
+  extensions:
+  - ".md"
+Python:
+  type: programming
+  color: "#3572A5"
+  extensions:
+  - ".py"
+YAML:
+  type: data
+  extensions:
+  - ".yml"
+  - ".yaml"
