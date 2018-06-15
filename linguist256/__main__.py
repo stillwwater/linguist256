@@ -166,6 +166,8 @@ args.types = ['programming'] if args.types is None else args.types.split(',')
 
 wd = os.path.realpath(os.path.dirname(__file__))
 
+data_file = None
+
 # find languages.yml
 for f in ['languages.yml', 'langauges.yaml', os.path.join(wd, 'languages.yml')]:
     if os.path.isfile(f):
@@ -173,7 +175,16 @@ for f in ['languages.yml', 'langauges.yaml', os.path.join(wd, 'languages.yml')]:
         break
 
 if data_file is None:
-    print('Err: Missing languages.yml')
+    print('\33[31mErr: Missing languages.yml' + RESET)
+    print("""
+    Please add a languages.yml to this directory with the format:
+
+    Language:
+        type: programming
+        color: "#FFFFFF"
+        extensions:
+            - ".extension"
+    """)
     exit(-1)
 
 # load languages file
