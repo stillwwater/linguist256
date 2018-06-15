@@ -6,11 +6,11 @@ Linguist256 is designed to produce a similar output to GitHub [Linguist](https:/
 
 ## Install
 
-Local environment installation with [`pipsi`](https://pypi.org/project/pipsi/)
-
 ```shell
 git clone https://github.com/stillwwater/linguist256
-pipsi install linguist256
+cd linguist256
+python3 setup.py sdist --format=tar   # build
+pip install dist/linguist256-0.2.tar  # install
 ```
 
 ## Usage
