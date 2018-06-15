@@ -12,6 +12,7 @@ import yaml
 import argparse
 import random
 
+from threading import Thread
 from linguist256 import convert
 
 RESET = '\33[0m'
@@ -20,6 +21,13 @@ RESET = '\33[0m'
 def __center(width: int):
     """return centered version of text"""
     return ' ' * int(args.width / 2 - width / 2)
+
+
+def __inc_dict(src: dict, key: str, increment: int):
+    if key in src:
+        src[key] += increment
+        return
+    src[key] = increment
 
 
 def color(lang: str):
@@ -43,23 +51,43 @@ def print_header():
     print('%s' % __center(head_width), '=' * head_width)
 
 
+def get_extension_size(path: str):
+    ext = '.' + '.'.join(os.path.basename(path).split('.')[1:])
+    size = os.stat(path).st_size
+    return ext, size
+
+
+def map_files(path: str, size_map: dict):
+    for f in glob.glob(path.strip() + '/**/*', recursive=True):
+        if not os.path.isfile(f):
+            continue
+
+        ext, size = get_extension_size(f)
+        __inc_dict(size_map, ext, size)
+
+
 def map_extension_sizes():
     """map files in repository by their file extension"""
     size_map = {}
+    threads = []
 
     for path in args.paths.split(','):
-        for f in glob.glob(path.strip() + '/**/*', recursive=True):
-            if not os.path.isfile(f):
+        for subdir in os.listdir(path):
+            real_path = os.path.join(path, subdir)
+
+            if os.path.isfile(real_path):
+                ext, size = get_extension_size(real_path)
+                __inc_dict(size_map, ext, size)
                 continue
 
-            ext = '.' + '.'.join(os.path.basename(f).split('.')[1:])
-            size = os.stat(f).st_size
+            # handle each immediate subdirectory in a separate thread
+            t = Thread(target=map_files, args=(real_path, size_map))
+            t.start()
+            threads.append(t)
 
-            if ext not in size_map:
-                size_map[ext] = size
-                continue
+    for t in threads:
+        t.join()
 
-            size_map[ext] += size
     return size_map
 
 
