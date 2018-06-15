@@ -20,9 +20,9 @@ def __get_delta(a, b):
     return math.sqrt(r + g + b)
 
 
-def torgb(color: str):
+def torgb(color: int):
     """covert hex color to rgb tuple"""
-    return tuple(int(color[i:i + 2], 16) for i in (0, 2, 4))
+    return ((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF)
 
 
 def to8bit(color: str):
@@ -32,7 +32,7 @@ def to8bit(color: str):
     if len(color) != 6:
         return None
 
-    rgb = torgb(color)
+    rgb = torgb(int(color, 16))
     min_delta = math.inf
     ans = None
 
